@@ -25,35 +25,35 @@ export async function POST(req: NextRequest) {
 
         const prompt = `
         You are an expert startup consultant and venture capitalist. 
-        Analyze the following startup idea and provide a structured report.
+        Analyze the following startup idea and provide a structured JSON report.
         
         Startup Idea: "${idea}"
 
-        Please analyze this idea based on the following 4 criteria:
-
-        1. **Scalability Assessment**: 
-           - Is this idea scalable? 
-           - What are the potential bottlenecks?
-           - Rate scalability from 1-10.
-
-        2. **Target Audience & Helpfulness**: 
-           - Who exactly is this helpful for? (Target User Persona)
-           - What specific problem does it solve for them?
-           - Is it a "Vitamin" (nice to have) or "Painkiller" (must have)?
-
-        3. **Future Growth Strategy (Low Cost)**:
-           - What features can be added later to make it a unicorn?
-           - How can they expand without massive capital initially?
-
-        4. **MVP Strategy (Minimal Cost)**:
-           - How can this be built with $0 or minimal cost right now?
-           - What is the absolute minimum feature set needed to launch?
-
-        Format the output in clear Markdown with bold headings and bullet points. Be honest, critical but encouraging.
+        Return a VALID JSON object with the following structure (do not use Markdown formatting, just raw JSON):
+        {
+            "score": <number 0-100, overall viability score>,
+            "pitch": "<string, a compelling 1-sentence elevator pitch>",
+            "radar": [
+                { "subject": "Innovation", "A": <number 0-100>, "fullMark": 100 },
+                { "subject": "Market Size", "A": <number 0-100>, "fullMark": 100 },
+                { "subject": "Feasibility", "A": <number 0-100>, "fullMark": 100 },
+                { "subject": "Competition", "A": <number 0-100>, "fullMark": 100 },
+                { "subject": "Scalability", "A": <number 0-100>, "fullMark": 100 }
+            ],
+            "competitors": ["<string>", "<string>", "<string>"],
+            "swot": {
+                "strengths": ["<string>", "<string>"],
+                "weaknesses": ["<string>", "<string>"],
+                "opportunities": ["<string>", "<string>"],
+                "threats": ["<string>", "<string>"]
+            },
+            "monetization": "<string, best business model suggestion>",
+            "mvp_strategy": "<string, minimal cost MVP strategy>"
+        }
         `;
 
         const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${geminiApiKey}`,
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${geminiApiKey}`,
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -73,12 +73,16 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const analysis = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        const textResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
-        if (!analysis) {
+        if (!textResponse) {
             console.error('[Idea Analyzer] No analysis in response:', JSON.stringify(data, null, 2));
             throw new Error('Failed to generate analysis from Gemini');
         }
+
+        // Clean up markdown code blocks if present
+        const cleanJson = textResponse.replace(/```json/g, '').replace(/```/g, '').trim();
+        const analysis = JSON.parse(cleanJson);
 
         return NextResponse.json({ analysis });
 
