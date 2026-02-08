@@ -23,11 +23,15 @@ export default function Home() {
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">VentureX</span>
         </div>
         <nav className="hidden md:flex gap-8 text-sm font-medium text-slate-400">
-          {["Product", "Departments", "Pricing"].map((item) => (
-            <a key={item} href={`#${item.toLowerCase().replace(/\s/g, "-")}`} className="hover:text-indigo-400 transition-colors duration-200">
-              {item}
-            </a>
-          ))}
+          <Link href="/product" className="hover:text-indigo-400 transition-colors duration-200">
+            Product
+          </Link>
+          <Link href="/departments" className="hover:text-indigo-400 transition-colors duration-200">
+            Departments
+          </Link>
+          <Link href="/pricing" className="hover:text-indigo-400 transition-colors duration-200">
+            Pricing
+          </Link>
         </nav>
         <div className="flex items-center gap-4">
           <Link href="/login" className="text-sm font-medium text-slate-300 hover:text-white transition-colors">
@@ -82,12 +86,95 @@ export default function Home() {
                 For Startups <Rocket className="w-5 h-5" />
               </Link>
               <Link
-                href="#departments"
-                className="w-full sm:w-auto px-8 py-4 bg-white/5 backdrop-blur-md border border-white/10 text-white rounded-full font-bold text-lg hover:bg-white/10 transition-all flex items-center justify-center"
+                href="/investors"
+                className="w-full sm:w-auto px-8 py-4 bg-white/5 backdrop-blur-md border border-white/10 text-white rounded-full font-bold text-lg hover:bg-white/10 transition-all flex items-center justify-center gap-2"
               >
-                For Investors
+                For Investors <Briefcase className="w-5 h-5" />
               </Link>
             </motion.div>
+          </div>
+        </section>
+
+        {/* Social Proof Section */}
+        <section className="py-16 relative">
+          <div className="container mx-auto px-6 max-w-6xl relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="grid grid-cols-2 md:grid-cols-4 gap-8"
+            >
+              <div className="text-center">
+                <div className="text-4xl md:text-5xl font-black text-white mb-2">500+</div>
+                <div className="text-slate-400 text-sm">Startups Powered</div>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl md:text-5xl font-black text-white mb-2">$50M+</div>
+                <div className="text-slate-400 text-sm">Capital Raised</div>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl md:text-5xl font-black text-white mb-2">98%</div>
+                <div className="text-slate-400 text-sm">Satisfaction Rate</div>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl md:text-5xl font-black text-white mb-2">24/7</div>
+                <div className="text-slate-400 text-sm">Support Available</div>
+              </div>
+            </motion.div>
+
+            {/* Trust Badges */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              className="mt-16 text-center"
+            >
+              <p className="text-slate-500 text-sm uppercase tracking-wider mb-6">Trusted By</p>
+              <div className="flex flex-wrap justify-center gap-8 items-center">
+                {['Y Combinator', 'Techstars', 'Sequoia', '500 Startups'].map((company, idx) => (
+                  <div key={idx} className="px-6 py-3 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 text-slate-400 font-semibold hover:text-white hover:border-indigo-500/30 transition-all">
+                    {company}
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Feature Highlights */}
+        <section className="py-24 relative">
+          <div className="container mx-auto px-6 max-w-6xl">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center mb-16"
+            >
+              <h2 className="text-sm font-semibold text-indigo-400 uppercase tracking-widest mb-3">Why VentureX</h2>
+              <h3 className="text-4xl md:text-5xl font-bold text-white">Everything you need to scale</h3>
+            </motion.div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+              {[
+                { icon: Zap, title: 'Lightning Fast', desc: 'Real-time sync across all departments' },
+                { icon: Shield, title: 'Bank-Grade Security', desc: 'SOC 2 Type II certified' },
+                { icon: Users, title: 'Team Collaboration', desc: 'Built for cross-functional teams' },
+                { icon: Target, title: 'Goal Tracking', desc: 'OKRs & milestone management' },
+                { icon: BarChart, title: 'Deep Analytics', desc: 'Actionable insights, not just data' },
+                { icon: CheckCircle, title: 'Easy Setup', desc: 'Up and running in 5 minutes' }
+              ].map((feature, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.05 }}
+                  className="p-6 rounded-2xl bg-slate-900/40 backdrop-blur-xl border border-white/10 hover:border-indigo-500/30 transition-all group"
+                >
+                  <feature.icon className="w-8 h-8 text-indigo-400 mb-4 group-hover:scale-110 transition-transform" />
+                  <h4 className="text-lg font-bold text-white mb-2">{feature.title}</h4>
+                  <p className="text-slate-400 text-sm">{feature.desc}</p>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -206,6 +293,119 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {/* Testimonials Section */}
+        <section className="py-24 relative bg-slate-900/30">
+          <div className="container mx-auto px-6 max-w-6xl">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center mb-16"
+            >
+              <h2 className="text-sm font-semibold text-indigo-400 uppercase tracking-widest mb-3">Testimonials</h2>
+              <h3 className="text-4xl md:text-5xl font-bold text-white">Loved by founders worldwide</h3>
+            </motion.div>
+
+            <div className="grid md:grid-cols-3 gap-8">
+              {[
+                {
+                  quote: "VentureX replaced 7 different tools for us. Our burn rate tracking is now real-time, and we closed our Series A with confidence.",
+                  author: "Sarah Chen",
+                  role: "CEO, TechFlow",
+                  avatar: "👩‍💼"
+                },
+                {
+                  quote: "The best investment we made. Our team velocity increased 40% after switching. The GitHub integration alone is worth it.",
+                  author: "Marcus Johnson",
+                  role: "CTO, DevScale",
+                  avatar: "👨‍💻"
+                },
+                {
+                  quote: "Finally, one platform where finance, marketing, and dev can collaborate. Game-changer for cross-functional alignment.",
+                  author: "Priya Sharma",
+                  role: "Founder, HealthTech Inc",
+                  avatar: "👩‍🔬"
+                }
+              ].map((testimonial, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.1 }}
+                  className="p-8 rounded-2xl bg-slate-900/60 backdrop-blur-xl border border-white/10 hover:border-indigo-500/30 transition-all"
+                >
+                  <div className="flex gap-1 mb-4">
+                    {[...Array(5)].map((_, i) => (
+                      <span key={i} className="text-amber-400">★</span>
+                    ))}
+                  </div>
+                  <p className="text-slate-300 mb-6 leading-relaxed">"{testimonial.quote}"</p>
+                  <div className="flex items-center gap-3">
+                    <div className="text-3xl">{testimonial.avatar}</div>
+                    <div>
+                      <div className="font-bold text-white">{testimonial.author}</div>
+                      <div className="text-sm text-slate-400">{testimonial.role}</div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Final CTA Section */}
+        <section className="py-32 relative">
+          <div className="container mx-auto px-6 max-w-5xl">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="relative p-12 md:p-16 rounded-3xl bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10 border border-white/10 backdrop-blur-xl overflow-hidden"
+            >
+              <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl"></div>
+              <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl"></div>
+
+              <div className="relative z-10 text-center">
+                <Sparkles className="w-16 h-16 mx-auto mb-6 text-indigo-400" />
+                <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
+                  Ready to scale your startup?
+                </h2>
+                <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
+                  Join 500+ founders who've ditched the spreadsheet chaos for a unified command center.
+                </p>
+
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
+                  <Link
+                    href="/signup"
+                    className="w-full sm:w-auto px-8 py-4 bg-white text-slate-950 rounded-full font-bold text-lg hover:bg-slate-200 transition-all shadow-xl hover:scale-105 flex items-center justify-center gap-2"
+                  >
+                    Start Free Trial <ArrowRight className="w-5 h-5" />
+                  </Link>
+                  <Link
+                    href="/pricing"
+                    className="w-full sm:w-auto px-8 py-4 bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-full font-bold text-lg hover:bg-white/20 transition-all flex items-center justify-center"
+                  >
+                    View Pricing
+                  </Link>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-slate-400">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-emerald-400" />
+                    <span>No credit card required</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-emerald-400" />
+                    <span>14-day free trial</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-emerald-400" />
+                    <span>Cancel anytime</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </section>
       </main>
 
       <footer className="py-12 border-t border-white/5 bg-slate-950/80 backdrop-blur-md relative z-10">
@@ -224,29 +424,29 @@ export default function Home() {
             <div>
               <h4 className="font-semibold text-slate-200 mb-4">Product</h4>
               <ul className="space-y-2 text-sm text-slate-400">
-                <li><a href="#" className="hover:text-indigo-400 transition-colors">Features</a></li>
-                <li><a href="#" className="hover:text-indigo-400 transition-colors">Integrations</a></li>
-                <li><a href="#" className="hover:text-indigo-400 transition-colors">Pricing</a></li>
-                <li><a href="#" className="hover:text-indigo-400 transition-colors">Changelog</a></li>
+                <li><Link href="/product" className="hover:text-indigo-400 transition-colors">Features</Link></li>
+                <li><Link href="/product#integrations" className="hover:text-indigo-400 transition-colors">Integrations</Link></li>
+                <li><Link href="/pricing" className="hover:text-indigo-400 transition-colors">Pricing</Link></li>
+                <li><Link href="/product#changelog" className="hover:text-indigo-400 transition-colors">Changelog</Link></li>
               </ul>
             </div>
 
             <div>
               <h4 className="font-semibold text-slate-200 mb-4">Company</h4>
               <ul className="space-y-2 text-sm text-slate-400">
-                <li><a href="#" className="hover:text-indigo-400 transition-colors">About Us</a></li>
-                <li><a href="#" className="hover:text-indigo-400 transition-colors">Careers</a></li>
-                <li><a href="#" className="hover:text-indigo-400 transition-colors">Blog</a></li>
-                <li><a href="#" className="hover:text-indigo-400 transition-colors">Contact</a></li>
+                <li><Link href="/about" className="hover:text-indigo-400 transition-colors">About Us</Link></li>
+                <li><Link href="/about#careers" className="hover:text-indigo-400 transition-colors">Careers</Link></li>
+                <li><Link href="/about#blog" className="hover:text-indigo-400 transition-colors">Blog</Link></li>
+                <li><Link href="/contact" className="hover:text-indigo-400 transition-colors">Contact</Link></li>
               </ul>
             </div>
 
             <div>
               <h4 className="font-semibold text-slate-200 mb-4">Legal</h4>
               <ul className="space-y-2 text-sm text-slate-400">
-                <li><a href="#" className="hover:text-indigo-400 transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-indigo-400 transition-colors">Terms of Service</a></li>
-                <li><a href="#" className="hover:text-indigo-400 transition-colors">Security</a></li>
+                <li><Link href="/privacy" className="hover:text-indigo-400 transition-colors">Privacy Policy</Link></li>
+                <li><Link href="/terms" className="hover:text-indigo-400 transition-colors">Terms of Service</Link></li>
+                <li><Link href="/security" className="hover:text-indigo-400 transition-colors">Security</Link></li>
               </ul>
             </div>
           </div>

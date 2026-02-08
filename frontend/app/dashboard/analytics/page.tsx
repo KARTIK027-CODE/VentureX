@@ -89,6 +89,13 @@ export default function AnalyticsPage() {
     const [loading, setLoading] = useState(true);
     const [selectedDept, setSelectedDept] = useState<string>('All');
 
+    // Set department filter based on user role
+    useEffect(() => {
+        if (user && user.role !== 'founder' && user.department) {
+            setSelectedDept(user.department);
+        }
+    }, [user]);
+
     useEffect(() => {
         if (user) {
             fetchAnalyticsData();
@@ -217,18 +224,21 @@ export default function AnalyticsPage() {
                         </div>
                     </div>
 
-                    <div className="flex bg-slate-900/50 backdrop-blur-md p-1 rounded-xl border border-white/10">
-                        <select
-                            value={selectedDept}
-                            onChange={(e) => setSelectedDept(e.target.value)}
-                            className="bg-transparent text-white border-none focus:ring-0 cursor-pointer py-2 pl-4 pr-8 font-medium"
-                        >
-                            <option value="All" className="bg-slate-900">All Departments</option>
-                            {DEPARTMENTS.map(dept => (
-                                <option key={dept} value={dept} className="bg-slate-900">{dept}</option>
-                            ))}
-                        </select>
-                    </div>
+                    {/* Department Filter - Founder Only */}
+                    {user?.role === 'founder' && (
+                        <div className="flex bg-slate-900/50 backdrop-blur-md p-1 rounded-xl border border-white/10">
+                            <select
+                                value={selectedDept}
+                                onChange={(e) => setSelectedDept(e.target.value)}
+                                className="bg-transparent text-white border-none focus:ring-0 cursor-pointer py-2 pl-4 pr-8 font-medium"
+                            >
+                                <option value="All" className="bg-slate-900">All Departments</option>
+                                {DEPARTMENTS.map(dept => (
+                                    <option key={dept} value={dept} className="bg-slate-900">{dept}</option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
                 </motion.div>
 
                 {/* Overall Stats */}
@@ -348,7 +358,7 @@ export default function AnalyticsPage() {
                             <Users className="w-6 h-6 text-indigo-400" />
                             {selectedDept === 'All' ? 'Department Performance' : `${selectedDept} Overview`}
                         </h2>
-                        {selectedDept !== 'All' && (
+                        {selectedDept !== 'All' && user?.role === 'founder' && (
                             <button
                                 onClick={() => setSelectedDept('All')}
                                 className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg transition-colors flex items-center gap-2"
@@ -371,7 +381,7 @@ export default function AnalyticsPage() {
                                     key={dept.name}
                                     dept={dept}
                                     delay={0.1 * idx}
-                                    onClick={() => setSelectedDept(dept.name)}
+                                    onClick={user?.role === 'founder' ? () => setSelectedDept(dept.name) : undefined}
                                 />
                             ))}
                         </div>

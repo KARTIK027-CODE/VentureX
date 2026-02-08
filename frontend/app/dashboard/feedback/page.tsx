@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Star, MessageSquare, Loader2, ThumbsUp, DollarSign, CreditCard, Banknote, Wallet, Check, CheckCircle, X } from "lucide-react";
 import { feedbackApi } from "@/lib/api/feedback";
 import { AnimatePresence, motion } from "framer-motion";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Mock Data for Team Members (Fallback)
 const MOCK_TEAM_DATA = [
@@ -31,6 +32,7 @@ interface FeedbackItem {
 }
 
 export default function FeedbackPage() {
+    const { user } = useAuth();
     const [feedbacks, setFeedbacks] = useState<FeedbackItem[]>([]);
     const [activeTab, setActiveTab] = useState<'feedback' | 'team'>('feedback');
     const [teamMembers, setTeamMembers] = useState<any[]>([]);
@@ -241,30 +243,32 @@ export default function FeedbackPage() {
                         Give Feedback
                     </button>
                 ) : (
-                    // Salary Filter Dropdown
-                    <div className="flex bg-slate-800 rounded-lg p-1 border border-white/10">
-                        <button
-                            onClick={() => setSalaryFilter('all')}
-                            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${salaryFilter === 'all' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'
-                                }`}
-                        >
-                            All
-                        </button>
-                        <button
-                            onClick={() => setSalaryFilter('paid')}
-                            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${salaryFilter === 'paid' ? 'bg-green-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'
-                                }`}
-                        >
-                            Paid
-                        </button>
-                        <button
-                            onClick={() => setSalaryFilter('unpaid')}
-                            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${salaryFilter === 'unpaid' ? 'bg-amber-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'
-                                }`}
-                        >
-                            Unpaid
-                        </button>
-                    </div>
+                    // Salary Filter Dropdown (Founder Only)
+                    user?.role === 'founder' ? (
+                        <div className="flex bg-slate-800 rounded-lg p-1 border border-white/10">
+                            <button
+                                onClick={() => setSalaryFilter('all')}
+                                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${salaryFilter === 'all' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'
+                                    }`}
+                            >
+                                All
+                            </button>
+                            <button
+                                onClick={() => setSalaryFilter('paid')}
+                                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${salaryFilter === 'paid' ? 'bg-green-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'
+                                    }`}
+                            >
+                                Paid
+                            </button>
+                            <button
+                                onClick={() => setSalaryFilter('unpaid')}
+                                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${salaryFilter === 'unpaid' ? 'bg-amber-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'
+                                    }`}
+                            >
+                                Unpaid
+                            </button>
+                        </div>
+                    ) : null
                 )}
             </div>
 
@@ -273,8 +277,8 @@ export default function FeedbackPage() {
                 <button
                     onClick={() => setActiveTab('feedback')}
                     className={`pb-4 text-sm font-medium transition-colors ${activeTab === 'feedback'
-                            ? 'text-indigo-400 border-b-2 border-indigo-400'
-                            : 'text-slate-400 hover:text-white'
+                        ? 'text-indigo-400 border-b-2 border-indigo-400'
+                        : 'text-slate-400 hover:text-white'
                         }`}
                 >
                     App Feedback
@@ -282,8 +286,8 @@ export default function FeedbackPage() {
                 <button
                     onClick={() => setActiveTab('team')}
                     className={`pb-4 text-sm font-medium transition-colors ${activeTab === 'team'
-                            ? 'text-indigo-400 border-b-2 border-indigo-400'
-                            : 'text-slate-400 hover:text-white'
+                        ? 'text-indigo-400 border-b-2 border-indigo-400'
+                        : 'text-slate-400 hover:text-white'
                         }`}
                 >
                     Team Management
@@ -386,19 +390,21 @@ export default function FeedbackPage() {
                                 >
                                     View Analytics
                                 </button>
-                                {member.salaryPaid ? (
-                                    <div className="flex-1 py-2 bg-green-500/10 border border-green-500/20 text-green-400 text-sm rounded-lg flex items-center justify-center gap-2 font-medium">
-                                        <CheckCircle className="w-4 h-4" />
-                                        Salary Paid
-                                    </div>
-                                ) : (
-                                    <button
-                                        onClick={() => handlePaySalary(member._id)}
-                                        className="flex-1 py-2 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 text-sm rounded-lg transition-colors border border-emerald-500/20 flex items-center justify-center gap-2"
-                                    >
-                                        <DollarSign className="w-4 h-4" />
-                                        Pay Salary
-                                    </button>
+                                {user?.role === 'founder' && (
+                                    member.salaryPaid ? (
+                                        <div className="flex-1 py-2 bg-green-500/10 border border-green-500/20 text-green-400 text-sm rounded-lg flex items-center justify-center gap-2 font-medium">
+                                            <CheckCircle className="w-4 h-4" />
+                                            Salary Paid
+                                        </div>
+                                    ) : (
+                                        <button
+                                            onClick={() => handlePaySalary(member._id)}
+                                            className="flex-1 py-2 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 text-sm rounded-lg transition-colors border border-emerald-500/20 flex items-center justify-center gap-2"
+                                        >
+                                            <DollarSign className="w-4 h-4" />
+                                            Pay Salary
+                                        </button>
+                                    )
                                 )}
                             </div>
                         </div>
@@ -521,8 +527,8 @@ export default function FeedbackPage() {
                                                     key={method.id}
                                                     onClick={() => setSelectedPaymentMethod(method.id)}
                                                     className={`p-4 rounded-xl border cursor-pointer transition-all flex items-center gap-4 ${selectedPaymentMethod === method.id
-                                                            ? 'bg-emerald-500/10 border-emerald-500'
-                                                            : 'bg-slate-950/50 border-white/10 hover:border-white/20'
+                                                        ? 'bg-emerald-500/10 border-emerald-500'
+                                                        : 'bg-slate-950/50 border-white/10 hover:border-white/20'
                                                         }`}
                                                 >
                                                     <div className={`p-2 rounded-lg ${selectedPaymentMethod === method.id ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-800 text-slate-400'

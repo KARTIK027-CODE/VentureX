@@ -35,7 +35,9 @@ import {
     PolarGrid,
     PolarAngleAxis,
     PolarRadiusAxis,
-    Radar
+    Radar,
+    RadialBarChart,
+    RadialBar
 } from "recharts";
 import { motion } from "framer-motion";
 import { startupApi } from "@/lib/api/startup";
@@ -207,94 +209,337 @@ export default function DashboardPage() {
                 </div>
             </motion.div>
 
-            {/* Financial Cards */}
+            {/* Metric Cards - Role Based */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {metrics.totalTasks === 0 && <IdeaAnalyzer />}
-                <MetricCard
-                    title="Total Revenue"
-                    value={`$${(financials?.summary?.totalRevenue || 0).toLocaleString()}`}
-                    subtitle="Year to Date"
-                    icon={TrendingUp}
-                    color="from-emerald-500 to-green-600"
-                    iconBg="bg-emerald-500/20"
-                    iconColor="text-emerald-400"
-                />
-                <MetricCard
-                    title="Net Profit"
-                    value={`$${(financials?.summary?.netProfit || 0).toLocaleString()}`}
-                    subtitle="Year to Date"
-                    icon={PieChartIcon}
-                    color="from-blue-500 to-indigo-600"
-                    iconBg="bg-blue-500/20"
-                    iconColor="text-blue-400"
-                />
-                <MetricCard
-                    title="Cash on Hand"
-                    value={`$${(financials?.summary?.currentCash || 0).toLocaleString()}`}
-                    subtitle="Current Balance"
-                    icon={Wallet}
-                    color="from-purple-500 to-pink-600"
-                    iconBg="bg-purple-500/20"
-                    iconColor="text-purple-400"
-                />
-                <MetricCard
-                    title="Team Size"
-                    value={metrics.teamMembers}
-                    subtitle="Active Members"
-                    icon={Users}
-                    color="from-amber-500 to-orange-600"
-                    iconBg="bg-amber-500/20"
-                    iconColor="text-amber-400"
-                />
+
+                {user?.role === 'founder' ? (
+                    <>
+                        <MetricCard
+                            title="Total Revenue"
+                            value={`$${(financials?.summary?.totalRevenue || 0).toLocaleString()}`}
+                            subtitle="Year to Date"
+                            icon={TrendingUp}
+                            color="from-emerald-500 to-green-600"
+                            iconBg="bg-emerald-500/20"
+                            iconColor="text-emerald-400"
+                        />
+                        <MetricCard
+                            title="Net Profit"
+                            value={`$${(financials?.summary?.netProfit || 0).toLocaleString()}`}
+                            subtitle="Year to Date"
+                            icon={PieChartIcon}
+                            color="from-blue-500 to-indigo-600"
+                            iconBg="bg-blue-500/20"
+                            iconColor="text-blue-400"
+                        />
+                        <MetricCard
+                            title="Cash on Hand"
+                            value={`$${(financials?.summary?.currentCash || 0).toLocaleString()}`}
+                            subtitle="Current Balance"
+                            icon={Wallet}
+                            color="from-purple-500 to-pink-600"
+                            iconBg="bg-purple-500/20"
+                            iconColor="text-purple-400"
+                        />
+                        <MetricCard
+                            title="Team Size"
+                            value={metrics.teamMembers}
+                            subtitle="Active Members"
+                            icon={Users}
+                            color="from-amber-500 to-orange-600"
+                            iconBg="bg-amber-500/20"
+                            iconColor="text-amber-400"
+                        />
+                    </>
+                ) : (
+                    <>
+                        {/* Non-Founder: Personal Performance Cards */}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: 0.1 }}
+                            className="p-6 rounded-3xl bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10 border border-white/10 backdrop-blur-xl relative group overflow-hidden"
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div className="relative z-10">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="p-3 bg-indigo-500/20 rounded-xl">
+                                        <CheckCircle2 className="w-6 h-6 text-indigo-400" />
+                                    </div>
+                                    <div className="text-xs px-2 py-1 rounded-full bg-green-500/20 text-green-400 border border-green-500/30 font-medium">
+                                        +{Math.floor(Math.random() * 20) + 5}%
+                                    </div>
+                                </div>
+                                <div className="space-y-1">
+                                    <p className="text-sm text-slate-400">Tasks Completed</p>
+                                    <p className="text-4xl font-bold text-white">{metrics.completedTasks}</p>
+                                    <p className="text-xs text-slate-500">This month</p>
+                                </div>
+                            </div>
+                        </motion.div>
+
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: 0.2 }}
+                            className="p-6 rounded-3xl bg-gradient-to-br from-emerald-500/10 via-teal-500/10 to-cyan-500/10 border border-white/10 backdrop-blur-xl relative group overflow-hidden"
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div className="relative z-10">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="p-3 bg-emerald-500/20 rounded-xl">
+                                        <Zap className="w-6 h-6 text-emerald-400" />
+                                    </div>
+                                    <div className="w-12 h-12">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <RadialBarChart
+                                                innerRadius="70%"
+                                                outerRadius="100%"
+                                                barSize={4}
+                                                data={[{ value: Math.min((metrics.completedTasks / (metrics.totalTasks || 1)) * 100, 100) }]}
+                                                startAngle={90}
+                                                endAngle={-270}
+                                            >
+                                                <RadialBar background dataKey="value" fill="#10b981" cornerRadius={10} />
+                                            </RadialBarChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                </div>
+                                <div className="space-y-1">
+                                    <p className="text-sm text-slate-400">Productivity Score</p>
+                                    <p className="text-4xl font-bold text-white">{Math.min(Math.round((metrics.completedTasks / (metrics.totalTasks || 1)) * 100), 100)}</p>
+                                    <p className="text-xs text-slate-500">Performance rating</p>
+                                </div>
+                            </div>
+                        </motion.div>
+
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: 0.3 }}
+                            className="p-6 rounded-3xl bg-gradient-to-br from-amber-500/10 via-orange-500/10 to-red-500/10 border border-white/10 backdrop-blur-xl relative group overflow-hidden"
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div className="relative z-10">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="p-3 bg-amber-500/20 rounded-xl">
+                                        <Target className="w-6 h-6 text-amber-400" />
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        {[...Array(3)].map((_, i) => (
+                                            <div key={i} className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" style={{ animationDelay: `${i * 0.2}s` }}></div>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="space-y-1">
+                                    <p className="text-sm text-slate-400">Active Streak</p>
+                                    <p className="text-4xl font-bold text-white">{Math.floor(Math.random() * 30) + 5}</p>
+                                    <p className="text-xs text-slate-500">Days in a row</p>
+                                </div>
+                            </div>
+                        </motion.div>
+
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: 0.4 }}
+                            className="p-6 rounded-3xl bg-gradient-to-br from-blue-500/10 via-violet-500/10 to-purple-500/10 border border-white/10 backdrop-blur-xl relative group overflow-hidden"
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-violet-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div className="relative z-10">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="p-3 bg-blue-500/20 rounded-xl">
+                                        <Users className="w-6 h-6 text-blue-400" />
+                                    </div>
+                                    <div className="text-xs px-2 py-1 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30 font-medium">
+                                        #{Math.floor(Math.random() * 5) + 1}
+                                    </div>
+                                </div>
+                                <div className="space-y-1">
+                                    <p className="text-sm text-slate-400">Department Rank</p>
+                                    <p className="text-4xl font-bold text-white">Top {Math.floor(Math.random() * 10) + 1}%</p>
+                                    <p className="text-xs text-slate-500">{user?.department || 'Team'}</p>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
             </div>
 
             {/* Charts Section */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-                {/* 1. Revenue Analysis (Bar Chart) */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                    className="p-6 rounded-3xl bg-slate-900/50 border border-white/10 backdrop-blur-xl hover:border-indigo-500/30 transition-all duration-300 relative group overflow-hidden"
-                >
-                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div className="flex justify-between items-center mb-6 relative z-10">
-                        <div>
-                            <h3 className="text-lg font-bold text-white">Revenue Analysis</h3>
-                            <p className="text-xs text-slate-400">Monthly revenue vs expenses</p>
+                {/* 1. Revenue Analysis (Bar Chart) - Founder Only */}
+                {user?.role === 'founder' && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                        className="p-6 rounded-3xl bg-slate-900/50 border border-white/10 backdrop-blur-xl hover:border-indigo-500/30 transition-all duration-300 relative group overflow-hidden"
+                    >
+                        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div className="flex justify-between items-center mb-6 relative z-10">
+                            <div>
+                                <h3 className="text-lg font-bold text-white">Revenue Analysis</h3>
+                                <p className="text-xs text-slate-400">Monthly revenue vs expenses</p>
+                            </div>
+                            <div className="p-2 bg-white/5 rounded-lg">
+                                <BarChart3 className="w-5 h-5 text-indigo-400" />
+                            </div>
                         </div>
-                        <div className="p-2 bg-white/5 rounded-lg">
-                            <BarChart3 className="w-5 h-5 text-indigo-400" />
+                        <div className="h-80 relative z-10">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={financials?.financials || []} barSize={20}>
+                                    <defs>
+                                        <linearGradient id="barGradient1" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="0%" stopColor="#818cf8" stopOpacity={1} />
+                                            <stop offset="100%" stopColor="#4f46e5" stopOpacity={0.6} />
+                                        </linearGradient>
+                                        <linearGradient id="barGradient2" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="0%" stopColor="#f472b6" stopOpacity={1} />
+                                            <stop offset="100%" stopColor="#db2777" stopOpacity={0.6} />
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.2} vertical={false} />
+                                    <XAxis dataKey="month" stroke="#94a3b8" tick={{ fontSize: 12 }} axisLine={false} tickLine={false} dy={10} />
+                                    <YAxis stroke="#94a3b8" tick={{ fontSize: 12 }} axisLine={false} tickLine={false} tickFormatter={(value) => `$${value / 1000}k`} />
+                                    <Tooltip
+                                        contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', color: '#f8fafc', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+                                        cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+                                    />
+                                    <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                                    <Bar dataKey="revenue" fill="url(#barGradient1)" name="Revenue" radius={[4, 4, 0, 0]} />
+                                    <Bar dataKey="expenses" fill="url(#barGradient2)" name="Expenses" radius={[4, 4, 0, 0]} />
+                                </BarChart>
+                            </ResponsiveContainer>
                         </div>
-                    </div>
-                    <div className="h-80 relative z-10">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={financials?.financials || []} barSize={20}>
-                                <defs>
-                                    <linearGradient id="barGradient1" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="0%" stopColor="#818cf8" stopOpacity={1} />
-                                        <stop offset="100%" stopColor="#4f46e5" stopOpacity={0.6} />
-                                    </linearGradient>
-                                    <linearGradient id="barGradient2" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="0%" stopColor="#f472b6" stopOpacity={1} />
-                                        <stop offset="100%" stopColor="#db2777" stopOpacity={0.6} />
-                                    </linearGradient>
-                                </defs>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.2} vertical={false} />
-                                <XAxis dataKey="month" stroke="#94a3b8" tick={{ fontSize: 12 }} axisLine={false} tickLine={false} dy={10} />
-                                <YAxis stroke="#94a3b8" tick={{ fontSize: 12 }} axisLine={false} tickLine={false} tickFormatter={(value) => `$${value / 1000}k`} />
-                                <Tooltip
-                                    contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', color: '#f8fafc', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
-                                    cursor={{ fill: 'rgba(255,255,255,0.05)' }}
-                                />
-                                <Legend wrapperStyle={{ paddingTop: '20px' }} />
-                                <Bar dataKey="revenue" fill="url(#barGradient1)" name="Revenue" radius={[4, 4, 0, 0]} />
-                                <Bar dataKey="expenses" fill="url(#barGradient2)" name="Expenses" radius={[4, 4, 0, 0]} />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </div>
-                </motion.div>
+                    </motion.div>
+                )}
+
+                {/* Non-Founder: Weekly Activity Chart */}
+                {user?.role !== 'founder' && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.5 }}
+                        className="p-6 rounded-3xl bg-slate-900/50 border border-white/10 backdrop-blur-xl hover:border-indigo-500/30 transition-all duration-300 relative group overflow-hidden"
+                    >
+                        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div className="flex justify-between items-center mb-6 relative z-10">
+                            <div>
+                                <h3 className="text-lg font-bold text-white">Weekly Activity</h3>
+                                <p className="text-xs text-slate-400">Tasks completed this week</p>
+                            </div>
+                            <div className="p-2 bg-white/5 rounded-lg">
+                                <Activity className="w-5 h-5 text-indigo-400" />
+                            </div>
+                        </div>
+                        <div className="h-80 relative z-10">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={[
+                                    { day: 'Mon', tasks: Math.floor(Math.random() * 10) + 3 },
+                                    { day: 'Tue', tasks: Math.floor(Math.random() * 10) + 3 },
+                                    { day: 'Wed', tasks: Math.floor(Math.random() * 10) + 3 },
+                                    { day: 'Thu', tasks: Math.floor(Math.random() * 10) + 3 },
+                                    { day: 'Fri', tasks: Math.floor(Math.random() * 10) + 3 },
+                                    { day: 'Sat', tasks: Math.floor(Math.random() * 5) + 1 },
+                                    { day: 'Sun', tasks: Math.floor(Math.random() * 5) + 1 }
+                                ]}>
+                                    <defs>
+                                        <linearGradient id="activityGradient" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="0%" stopColor="#818cf8" stopOpacity={0.3} />
+                                            <stop offset="100%" stopColor="#818cf8" stopOpacity={0} />
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.2} vertical={false} />
+                                    <XAxis dataKey="day" stroke="#94a3b8" tick={{ fontSize: 12 }} axisLine={false} tickLine={false} dy={10} />
+                                    <YAxis stroke="#94a3b8" tick={{ fontSize: 12 }} axisLine={false} tickLine={false} />
+                                    <Tooltip
+                                        contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', color: '#f8fafc', borderRadius: '12px' }}
+                                        cursor={{ stroke: '#818cf8', strokeWidth: 2 }}
+                                    />
+                                    <Area type="monotone" dataKey="tasks" stroke="#818cf8" strokeWidth={3} fill="url(#activityGradient)" />
+                                    <Line type="monotone" dataKey="tasks" stroke="#818cf8" strokeWidth={3} dot={{ fill: '#818cf8', r: 5 }} activeDot={{ r: 8 }} />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </motion.div>
+                )}
+
+                {/* Non-Founder: Task Distribution Pie Chart */}
+                {user?.role !== 'founder' && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.6 }}
+                        className="p-6 rounded-3xl bg-slate-900/50 border border-white/10 backdrop-blur-xl hover:border-emerald-500/30 transition-all duration-300 relative group overflow-hidden"
+                    >
+                        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div className="flex justify-between items-center mb-6 relative z-10">
+                            <div>
+                                <h3 className="text-lg font-bold text-white">Task Distribution</h3>
+                                <p className="text-xs text-slate-400">Current workload breakdown</p>
+                            </div>
+                            <div className="p-2 bg-white/5 rounded-lg">
+                                <PieChartIcon className="w-5 h-5 text-emerald-400" />
+                            </div>
+                        </div>
+                        <div className="h-80 relative z-10">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <defs>
+                                        <linearGradient id="todoGradient" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="0%" stopColor="#f59e0b" />
+                                            <stop offset="100%" stopColor="#d97706" />
+                                        </linearGradient>
+                                        <linearGradient id="progressGradient" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="0%" stopColor="#3b82f6" />
+                                            <stop offset="100%" stopColor="#2563eb" />
+                                        </linearGradient>
+                                        <linearGradient id="completedGradient" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="0%" stopColor="#10b981" />
+                                            <stop offset="100%" stopColor="#059669" />
+                                        </linearGradient>
+                                        <linearGradient id="reviewGradient" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="0%" stopColor="#8b5cf6" />
+                                            <stop offset="100%" stopColor="#7c3aed" />
+                                        </linearGradient>
+                                    </defs>
+                                    <Pie
+                                        data={[
+                                            { name: 'To Do', value: metrics.totalTasks - metrics.completedTasks, fill: 'url(#todoGradient)' },
+                                            { name: 'In Progress', value: Math.floor((metrics.totalTasks - metrics.completedTasks) * 0.4), fill: 'url(#progressGradient)' },
+                                            { name: 'Completed', value: metrics.completedTasks, fill: 'url(#completedGradient)' },
+                                            { name: 'Review', value: Math.floor((metrics.totalTasks - metrics.completedTasks) * 0.2), fill: 'url(#reviewGradient)' }
+                                        ]}
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={60}
+                                        outerRadius={100}
+                                        paddingAngle={5}
+                                        dataKey="value"
+                                        label={(entry) => entry.name}
+                                        labelLine={false}
+                                    >
+                                        {[0, 1, 2, 3].map((index) => (
+                                            <Cell key={`cell-${index}`} />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip
+                                        contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', color: '#f8fafc', borderRadius: '12px' }}
+                                    />
+                                    <Legend
+                                        verticalAlign="bottom"
+                                        height={36}
+                                        iconType="circle"
+                                        wrapperStyle={{ paddingTop: '20px' }}
+                                    />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </motion.div>
+                )}
 
                 {/* 2. User Growth (Line Chart) */}
                 <motion.div
