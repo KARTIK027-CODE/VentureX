@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { User, Building2, Lock, Bell, Save, Loader2, Sparkles, Check, ArrowRight } from "lucide-react";
@@ -12,7 +12,7 @@ import CustomDropdown from "@/components/CustomDropdown";
 
 type Tab = "profile" | "company" | "security" | "notifications";
 
-export default function SettingsPage() {
+function SettingsContent() {
     const { user } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -433,6 +433,18 @@ export default function SettingsPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function SettingsPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
+                <Loader2 className="w-12 h-12 text-indigo-400 animate-spin" />
+            </div>
+        }>
+            <SettingsContent />
+        </Suspense>
     );
 }
 
